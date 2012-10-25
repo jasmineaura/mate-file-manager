@@ -1861,7 +1861,10 @@ volume_mounted_cb (GVolume *volume,
     }
 
 
-    eel_remove_weak_pointer (&(sidebar->go_to_after_mount_slot));
+    if (sidebar->go_to_after_mount_slot) {
+    	g_object_remove_weak_pointer (G_OBJECT (sidebar->go_to_after_mount_slot),
+    				      (gpointer *) &sidebar->go_to_after_mount_slot);
+    }
 }
 
 static void
@@ -1960,7 +1963,9 @@ open_selected_bookmark (CajaPlacesSidebar *sidebar,
 
             slot = caja_window_info_get_active_slot (sidebar->window);
             sidebar->go_to_after_mount_slot = slot;
-            eel_add_weak_pointer (&(sidebar->go_to_after_mount_slot));
+            g_object_add_weak_pointer (G_OBJECT (sidebar->go_to_after_mount_slot),
+            			       (gpointer *) &sidebar->go_to_after_mount_slot);
+
 
             sidebar->go_to_after_mount_flags = flags;
 
@@ -3350,7 +3355,11 @@ caja_places_sidebar_dispose (GObject *object)
         sidebar->filter_model = NULL;
     }
 
-    eel_remove_weak_pointer (&(sidebar->go_to_after_mount_slot));
+    if (sidebar->go_to_after_mount_slot) {
+    	g_object_remove_weak_pointer (G_OBJECT (sidebar->go_to_after_mount_slot),
+    				      (gpointer *) &sidebar->go_to_after_mount_slot);
+    	sidebar->go_to_after_mount_slot = NULL;
+    }
 
     g_signal_handlers_disconnect_by_func (caja_preferences,
                                           desktop_location_changed_callback,

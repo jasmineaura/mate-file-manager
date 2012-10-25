@@ -175,7 +175,10 @@ caja_query_editor_dispose (GObject *object)
                                               editor);
 
         caja_search_bar_return_entry (editor->details->bar);
-        eel_remove_weak_pointer (&editor->details->bar);
+
+        g_object_remove_weak_pointer (G_OBJECT (editor->details->bar),
+        			      (gpointer *) &editor->details->bar);
+        editor->details->bar = NULL;
     }
 
     EEL_CALL_PARENT (G_OBJECT_CLASS, dispose, (object));
@@ -1342,7 +1345,8 @@ caja_query_editor_new_with_bar (gboolean start_hidden,
     caja_query_editor_set_visible (editor, !start_hidden);
 
     editor->details->bar = bar;
-    eel_add_weak_pointer (&editor->details->bar);
+    g_object_add_weak_pointer (G_OBJECT (editor->details->bar),
+    			       (gpointer *) &editor->details->bar);
 
     editor->details->slot = slot;
 

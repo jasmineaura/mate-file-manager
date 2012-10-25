@@ -102,6 +102,9 @@ real_update_query_editor (CajaWindowSlot *slot)
         {
             caja_query_editor_set_default_query (CAJA_QUERY_EDITOR (query_editor));
         }
+
+        g_object_add_weak_pointer (G_OBJECT (slot->query_editor),
+        			   (gpointer *) &slot->query_editor);
     }
 
     caja_directory_unref (directory);
@@ -539,8 +542,6 @@ caja_window_slot_update_query_editor (CajaWindowSlot *slot)
 
     EEL_CALL_METHOD (CAJA_WINDOW_SLOT_CLASS, slot,
                      update_query_editor, (slot));
-
-    eel_add_weak_pointer (&slot->query_editor);
 }
 
 static void

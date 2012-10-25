@@ -1307,7 +1307,8 @@ add_new_pattern (CajaPropertyBrowser *property_browser)
         gtk_widget_show (GTK_WIDGET (dialog));
 
         if (property_browser->details->patterns_dialog)
-            eel_add_weak_pointer (&property_browser->details->patterns_dialog);
+            g_object_add_weak_pointer (G_OBJECT (property_browser->details->patterns_dialog),
+            			       (gpointer *) &property_browser->details->patterns_dialog);
     }
 }
 
@@ -1427,7 +1428,8 @@ show_color_selection_window (GtkWidget *widget, gpointer *data)
 
     /* connect the signals to the new dialog */
 
-    eel_add_weak_pointer (&property_browser->details->colors_dialog);
+    g_object_add_weak_pointer (G_OBJECT (property_browser->details->colors_dialog),
+    			       (gpointer *) &property_browser->details->colors_dialog);
 
     g_signal_connect_object (property_browser->details->colors_dialog, "response",
                              G_CALLBACK (add_color_to_browser), property_browser, 0);
@@ -1453,7 +1455,8 @@ add_new_color (CajaPropertyBrowser *property_browser)
         property_browser->details->colors_dialog = gtk_color_selection_dialog_new (_("Select a Color to Add"));
         color_dialog = GTK_COLOR_SELECTION_DIALOG (property_browser->details->colors_dialog);
 
-        eel_add_weak_pointer (&property_browser->details->colors_dialog);
+        g_object_add_weak_pointer (G_OBJECT (property_browser->details->colors_dialog),
+        			   (gpointer *) &property_browser->details->colors_dialog);
 
         g_object_get (color_dialog, "ok-button", &ok_button,
                       "cancel-button", &cancel_button,
@@ -1564,7 +1567,8 @@ add_new_emblem (CajaPropertyBrowser *property_browser)
     {
         property_browser->details->emblems_dialog = caja_emblem_dialog_new (property_browser);
 
-        eel_add_weak_pointer (&property_browser->details->emblems_dialog);
+        g_object_add_weak_pointer (G_OBJECT (property_browser->details->emblems_dialog),
+        			(gpointer *) &property_browser->details->emblems_dialog);
 
         g_signal_connect_object (property_browser->details->emblems_dialog, "response",
                                  G_CALLBACK (emblem_dialog_clicked), property_browser, 0);

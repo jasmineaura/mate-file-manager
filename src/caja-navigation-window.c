@@ -417,7 +417,10 @@ set_current_side_panel (CajaNavigationWindow *window,
     {
         caja_sidebar_is_visible_changed (window->details->current_side_panel,
                                          FALSE);
-        eel_remove_weak_pointer (&window->details->current_side_panel);
+        if (window->details->current_side_panel != NULL) {
+        	g_object_remove_weak_pointer (G_OBJECT (window->details->current_side_panel),
+        				(gpointer *) &window->details->current_side_panel);
+        }
     }
 
     if (panel != NULL)
@@ -425,7 +428,8 @@ set_current_side_panel (CajaNavigationWindow *window,
         caja_sidebar_is_visible_changed (panel, TRUE);
     }
     window->details->current_side_panel = panel;
-    eel_add_weak_pointer (&window->details->current_side_panel);
+    g_object_add_weak_pointer (G_OBJECT (window->details->current_side_panel),
+    			       (gpointer *) &window->details->current_side_panel);
 }
 
 static void

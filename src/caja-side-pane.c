@@ -373,7 +373,8 @@ caja_side_pane_init (GObject *object)
     gtk_widget_show (select_hbox);
 
     side_pane->details->title_label = gtk_label_new ("");
-    eel_add_weak_pointer (&side_pane->details->title_label);
+    g_object_add_weak_pointer (G_OBJECT (side_pane->details->title_label),
+    			(gpointer *) &side_pane->details->title_label);
 
     gtk_widget_show (side_pane->details->title_label);
     gtk_box_pack_start (GTK_BOX (select_hbox),
