@@ -1024,9 +1024,11 @@ caja_query_editor_init (CajaQueryEditor *editor)
     editor->details->is_visible = TRUE;
 
     editor->details->invisible_vbox = gtk_vbox_new (FALSE, 6);
+    gtk_container_set_border_width (GTK_CONTAINER (editor->details->invisible_vbox), 6);
     gtk_box_pack_start (GTK_BOX (editor), editor->details->invisible_vbox,
                         FALSE, FALSE, 0);
     editor->details->visible_vbox = gtk_vbox_new (FALSE, 6);
+    gtk_container_set_border_width (GTK_CONTAINER (editor->details->visible_vbox), 6);
     gtk_box_pack_start (GTK_BOX (editor), editor->details->visible_vbox,
                         FALSE, FALSE, 0);
     /* Only show visible vbox */
