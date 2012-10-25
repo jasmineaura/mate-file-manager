@@ -50,9 +50,37 @@ enum
     PROP_X_CONTENT_TYPE,
 };
 
-G_DEFINE_TYPE (CajaXContentBar, caja_x_content_bar, GTK_TYPE_HBOX)
+enum {
+    CONTENT_BAR_RESPONSE_APP = 1
+};
 
-void
+G_DEFINE_TYPE (CajaXContentBar, caja_x_content_bar, GTK_TYPE_INFO_BAR)
+
+static void
+content_bar_response_cb (GtkInfoBar *infobar,
+			 gint response_id,
+			 gpointer user_data)
+{
+    GAppInfo *default_app;
+    CajaXContentBar *bar = user_data;
+
+    if (response_id != CONTENT_BAR_RESPONSE_APP) {
+        return;
+    }
+
+    if (bar->priv->x_content_type == NULL ||
+        bar->priv->mount == NULL)
+        return;
+
+    default_app = g_app_info_get_default_for_type (bar->priv->x_content_type, FALSE);
+    if (default_app != NULL) {
+	caja_launch_application_for_mount (default_app, bar->priv->mount,
+					   GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (bar))));
+	g_object_unref (default_app);
+    }
+}
+
+static void
 caja_x_content_bar_set_x_content_type (CajaXContentBar *bar, const char *x_content_type)
 {
     char *message;
@@ -129,15 +157,7 @@ caja_x_content_bar_set_x_content_type (CajaXContentBar *bar, const char *x_conte
         icon = g_app_info_get_icon (default_app);
         if (icon != NULL)
         {
-            GdkPixbuf *pixbuf;
-            int icon_size;
-            CajaIconInfo *icon_info;
-            icon_size = caja_get_icon_size_for_stock_size (GTK_ICON_SIZE_BUTTON);
-            icon_info = caja_icon_info_lookup (icon, icon_size);
-            pixbuf = caja_icon_info_get_pixbuf_at_size (icon_info, icon_size);
-            image = gtk_image_new_from_pixbuf (pixbuf);
-            g_object_unref (pixbuf);
-            g_object_unref (icon_info);
+            image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_BUTTON);
         }
         else
         {
@@ -162,19 +182,7 @@ caja_x_content_bar_set_x_content_type (CajaXContentBar *bar, const char *x_conte
     g_free (description);
 }
 
-const char *
-caja_x_content_bar_get_x_content_type (CajaXContentBar *bar)
-{
-    return bar->priv->x_content_type;
-}
-
-GMount *
-caja_x_content_bar_get_mount (CajaXContentBar *bar)
-{
-    return bar->priv->mount != NULL ? g_object_ref (bar->priv->mount) : NULL;
-}
-
-void
+static void
 caja_x_content_bar_set_mount (CajaXContentBar *bar, GMount *mount)
 {
     if (bar->priv->mount != NULL)
@@ -277,43 +285,24 @@ caja_x_content_bar_class_init (CajaXContentBarClass *klass)
 }
 
 static void
-button_clicked_callback (GtkWidget *button, CajaXContentBar *bar)
-{
-    GAppInfo *default_app;
-
-    if (bar->priv->x_content_type == NULL ||
-            bar->priv->mount == NULL)
-        return;
-
-    default_app = g_app_info_get_default_for_type (bar->priv->x_content_type, FALSE);
-    if (default_app != NULL)
-    {
-	caja_launch_application_for_mount (default_app, bar->priv->mount,
-					   GTK_WINDOW (gtk_widget_get_toplevel (button)));
-        g_object_unref (default_app);
-    }
-}
-
-static void
 caja_x_content_bar_init (CajaXContentBar *bar)
 {
-    GtkWidget *hbox;
-
     bar->priv = CAJA_X_CONTENT_BAR_GET_PRIVATE (bar);
 
-    hbox = GTK_WIDGET (bar);
-
     bar->priv->label = gtk_label_new (NULL);
+    // Uncomment when moving to GTK3
+    //gtk_style_context_add_class (gtk_widget_get_style_context (bar->priv->label),
+    //				 "caja-cluebar-label");
     gtk_label_set_ellipsize (GTK_LABEL (bar->priv->label), PANGO_ELLIPSIZE_END);
     gtk_misc_set_alignment (GTK_MISC (bar->priv->label), 0.0, 0.5);
-    gtk_box_pack_start (GTK_BOX (bar), bar->priv->label, TRUE, TRUE, 0);
+    gtk_container_add (GTK_CONTAINER (bar), bar->priv->label);
 
-    bar->priv->button = gtk_button_new ();
-    gtk_box_pack_end (GTK_BOX (hbox), bar->priv->button, FALSE, FALSE, 0);
+    bar->priv->button = gtk_info_bar_add_button (GTK_INFO_BAR (bar),
+    						 "",
+    						 CONTENT_BAR_RESPONSE_APP);
 
-    g_signal_connect (bar->priv->button,
-                      "clicked",
-                      G_CALLBACK (button_clicked_callback),
+    g_signal_connect (bar, "response",
+                      G_CALLBACK (content_bar_response_cb),
                       bar);
 }
 
@@ -321,12 +310,8 @@ GtkWidget *
 caja_x_content_bar_new (GMount *mount,
                         const char *x_content_type)
 {
-    GObject *bar;
-
-    bar = g_object_new (CAJA_TYPE_X_CONTENT_BAR,
+    return g_object_new (CAJA_TYPE_X_CONTENT_BAR,
                         "mount", mount,
                         "x-content-type", x_content_type,
                         NULL);
-
-    return GTK_WIDGET (bar);
 }

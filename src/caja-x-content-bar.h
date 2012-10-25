@@ -43,26 +43,20 @@ extern "C" {
 
     typedef struct
     {
-        GtkHBox	box;
+        GtkInfoBar parent;
 
         CajaXContentBarPrivate *priv;
     } CajaXContentBar;
 
     typedef struct
     {
-        GtkHBoxClass	    parent_class;
+        GtkInfoBarClass parent_class;
     } CajaXContentBarClass;
 
     GType		 caja_x_content_bar_get_type	(void) G_GNUC_CONST;
 
     GtkWidget	*caja_x_content_bar_new		   (GMount              *mount,
-            const char          *x_content_type);
-    const char      *caja_x_content_bar_get_x_content_type (CajaXContentBar *bar);
-    void             caja_x_content_bar_set_x_content_type (CajaXContentBar *bar,
-            const char          *x_content_type);
-    void             caja_x_content_bar_set_mount          (CajaXContentBar *bar,
-            GMount              *mount);
-    GMount          *caja_x_content_bar_get_mount          (CajaXContentBar *bar);
+					            const char          *x_content_type);
 
 #ifdef __cplusplus
 }
