@@ -229,9 +229,8 @@ caja_trash_bar_init (CajaTrashBar *bar)
 GtkWidget *
 caja_trash_bar_new (CajaWindow *window)
 {
-    GObject *bar;
-
-    bar = g_object_new (CAJA_TYPE_TRASH_BAR, "window", window, NULL);
-
-    return GTK_WIDGET (bar);
+    return g_object_new (CAJA_TYPE_TRASH_BAR,
+    			"window", window,
+    			"message-type", GTK_MESSAGE_QUESTION,
+    			NULL);
 }

@@ -313,6 +313,7 @@ caja_x_content_bar_new (GMount *mount,
                         const char *x_content_type)
 {
     return g_object_new (CAJA_TYPE_X_CONTENT_BAR,
+    			"message-type", GTK_MESSAGE_QUESTION,
                         "mount", mount,
                         "x-content-type", x_content_type,
                         NULL);
