@@ -2261,7 +2261,6 @@ directory_contents_value_field_update (FMPropertiesWindow *window)
 	g_assert (FM_IS_PROPERTIES_WINDOW (window));
 
 	status = CAJA_REQUEST_DONE;
-	file_status = CAJA_REQUEST_NOT_STARTED;
 	total_count = window->details->total_count;
 	total_size = window->details->total_size;
 	unreadable_directory_count = FALSE;

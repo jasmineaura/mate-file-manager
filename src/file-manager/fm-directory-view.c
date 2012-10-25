@@ -4616,8 +4616,6 @@ reset_open_with_menu (FMDirectoryView *view, GList *selection)
 				      &view->details->open_with_merge_id,
 				      &view->details->open_with_action_group);
 
-	num_applications = 0;
-
 	other_applications_visible = (selection != NULL);
 	filter_default = (selection != NULL);
 

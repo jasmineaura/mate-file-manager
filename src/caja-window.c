@@ -1558,7 +1558,6 @@ caja_window_sync_zoom_widgets (CajaWindow *window)
     }
     else
     {
-        zoom_level = CAJA_ZOOM_LEVEL_STANDARD;
         supports_zooming = FALSE;
         can_zoom = FALSE;
         can_zoom_in = FALSE;
