@@ -68,7 +68,6 @@ struct _CajaWindowPane
     /* available slots, and active slot.
      * Both of them may never be NULL. */
     GList *slots;
-    GList *active_slots;
     CajaWindowSlot *active_slot;
 
     /* whether or not this pane is active */

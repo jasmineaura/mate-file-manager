@@ -73,22 +73,8 @@ caja_window_pane_slot_close (CajaWindowPane *pane, CajaWindowSlot *slot)
     {
         CajaWindow *window;
         window = pane->window;
-        if (pane->active_slot == slot)
-        {
-            g_assert (pane->active_slots != NULL);
-            g_assert (pane->active_slots->data == slot);
-
-            next_slot = NULL;
-            if (pane->active_slots->next != NULL)
-            {
-                next_slot = CAJA_WINDOW_SLOT (pane->active_slots->next->data);
-            }
-
-            if (next_slot == NULL)
-            {
-                next_slot = get_first_inactive_slot (CAJA_WINDOW_PANE (pane));
-            }
-
+        if (pane->active_slot == slot) {
+            next_slot = get_first_inactive_slot (CAJA_WINDOW_PANE (pane));
             caja_window_set_active_slot (window, next_slot);
         }
         caja_window_close_slot (slot);
@@ -170,7 +156,6 @@ static void
 caja_window_pane_init (CajaWindowPane *pane)
 {
     pane->slots = NULL;
-    pane->active_slots = NULL;
     pane->active_slot = NULL;
     pane->is_active = FALSE;
 }

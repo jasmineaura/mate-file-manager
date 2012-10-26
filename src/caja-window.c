@@ -869,8 +869,6 @@ caja_window_close_slot (CajaWindowSlot *slot)
     slot->pane = NULL;
     g_object_unref (slot);
     pane->slots = g_list_remove (pane->slots, slot);
-    pane->active_slots = g_list_remove (pane->active_slots, slot);
-
 }
 
 CajaWindowPane*
@@ -970,11 +968,6 @@ caja_window_set_active_slot (CajaWindow *window, CajaWindowSlot *new_slot)
     /* make new slot active, if it exists */
     if (new_slot)
     {
-        window->details->active_pane->active_slots =
-            g_list_remove (window->details->active_pane->active_slots, new_slot);
-        window->details->active_pane->active_slots =
-            g_list_prepend (window->details->active_pane->active_slots, new_slot);
-
         /* inform sidebar panels */
         caja_window_report_location_change (window);
         /* TODO decide whether "selection-changed" should be emitted */
