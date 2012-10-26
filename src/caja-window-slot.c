@@ -322,10 +322,7 @@ caja_window_slot_set_title (CajaWindowSlot *slot,
         slot->title = g_strdup (title);
     }
 
-    if (eel_strlen (slot->title) > 0 && slot->current_location_bookmark &&
-            caja_bookmark_set_name (slot->current_location_bookmark,
-                                    slot->title))
-    {
+    if (eel_strlen (slot->title) > 0 && slot->current_location_bookmark) {
         changed = TRUE;
 
         /* Name of item in history list changed, tell listeners. */

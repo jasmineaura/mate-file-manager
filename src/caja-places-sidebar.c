@@ -259,6 +259,10 @@ is_built_in_bookmark (CajaFile *file)
 	gboolean built_in;
 	gint idx;
 
+	if (caja_file_is_home (file)) {
+	    return TRUE;
+	}
+
 	built_in = FALSE;
 
 	for (idx = 0; idx < G_USER_N_DIRECTORIES; idx++) {
@@ -673,18 +677,14 @@ update_places (CajaPlacesSidebar *sidebar)
 
     /* home folder */
     if (strcmp (g_get_home_dir(), desktop_path) != 0) {
-        char *display_name;
-
         mount_uri = caja_get_home_directory_uri ();
-        display_name = g_filename_display_basename (g_get_home_dir ());
         icon = g_themed_icon_new (CAJA_ICON_HOME);
         last_iter = add_place (sidebar, PLACES_BUILT_IN,
 	            	       SECTION_COMPUTER,
-	            	       display_name, icon,
+	            	       _("Home"), icon,
 	            	       mount_uri, NULL, NULL, NULL, 0,
 	            	       _("Open your personal folder"));
         g_object_unref (icon);
-        g_free (display_name);
         compare_for_selection (sidebar,
 	            	       location, mount_uri, last_uri,
 	            	       &last_iter, &select_path);

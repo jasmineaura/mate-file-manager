@@ -897,7 +897,7 @@ static const GtkActionEntry main_entries[] =
         G_CALLBACK (action_connect_to_server_callback)
     },
     /* name, stock id */         { "Home", CAJA_ICON_HOME,
-        /* label, accelerator */       N_("_Home Folder"), "<alt>Home",
+  /* label, accelerator */       N_("_Home"), "<alt>Home",
         /* tooltip */                  N_("Open your personal folder"),
         G_CALLBACK (action_home_callback)
     },

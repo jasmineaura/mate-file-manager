@@ -30,8 +30,9 @@
 #include <eel/eel-gtk-extensions.h>
 #include <eel/eel-gtk-macros.h>
 #include <eel/eel-vfs-extensions.h>
-#include <gtk/gtk.h>
 #include <gio/gio.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <string.h>
 #include <libcaja-private/caja-file.h>
 #include <libcaja-private/caja-icon-names.h>
@@ -199,7 +200,7 @@ caja_bookmark_copy (CajaBookmark *bookmark)
 char *
 caja_bookmark_get_name (CajaBookmark *bookmark)
 {
-    g_return_val_if_fail(CAJA_IS_BOOKMARK (bookmark), NULL);
+	g_return_val_if_fail (CAJA_IS_BOOKMARK (bookmark), NULL);
 
     return g_strdup (bookmark->details->name);
 }
@@ -437,9 +438,14 @@ bookmark_file_changed_callback (CajaFile *file, CajaBookmark *bookmark)
     {
         display_name = caja_file_get_display_name (file);
 
-        if (strcmp (bookmark->details->name, display_name) != 0)
-        {
+	if (caja_file_is_home (file)) {
+		g_free (bookmark->details->name);
+		g_free (display_name);
+
+        	bookmark->details->name = g_strdup (_("Home"));
+        } else if (strcmp (bookmark->details->name, display_name) != 0) {
             g_free (bookmark->details->name);
+
             bookmark->details->name = display_name;
             should_emit_appearance_changed_signal = TRUE;
         }
@@ -551,16 +557,19 @@ caja_bookmark_connect_file (CajaBookmark *bookmark)
 
     if (!bookmark->details->has_custom_name &&
             bookmark->details->file &&
-            caja_file_check_if_ready (bookmark->details->file, CAJA_FILE_ATTRIBUTE_INFO))
-    {
+            caja_file_check_if_ready (bookmark->details->file, CAJA_FILE_ATTRIBUTE_INFO)) {
         display_name = caja_file_get_display_name (bookmark->details->file);
-        if (strcmp (bookmark->details->name, display_name) != 0)
-        {
+
+        if (caja_file_is_home (bookmark->details->file)) {
             g_free (bookmark->details->name);
+            g_free (display_name);
+
+            bookmark->details->name = g_strdup (_("Home"));
+        } else if (strcmp (bookmark->details->name, display_name) != 0) {
+            g_free (bookmark->details->name);
+
             bookmark->details->name = display_name;
-        }
-        else
-        {
+        } else {
             g_free (display_name);
         }
     }
@@ -619,8 +628,10 @@ caja_bookmark_menu_item_new (CajaBookmark *bookmark)
     GtkWidget *menu_item;
     GtkWidget *image_widget;
     GtkLabel *label;
+	char *name;
 
-    menu_item = gtk_image_menu_item_new_with_label (bookmark->details->name);
+	name = caja_bookmark_get_name (bookmark);
+	menu_item = gtk_image_menu_item_new_with_label (name);
     label = GTK_LABEL (gtk_bin_get_child (GTK_BIN (menu_item)));
     gtk_label_set_use_underline (label, FALSE);
     gtk_label_set_ellipsize (label, PANGO_ELLIPSIZE_END);
@@ -633,6 +644,8 @@ caja_bookmark_menu_item_new (CajaBookmark *bookmark)
         gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (menu_item),
                                        image_widget);
     }
+
+	g_free (name);
 
     return menu_item;
 }
