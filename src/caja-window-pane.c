@@ -28,15 +28,24 @@
 #include "caja-window-manage-views.h"
 #include <eel/eel-gtk-macros.h>
 
-static void caja_window_pane_init       (CajaWindowPane *pane);
-static void caja_window_pane_class_init (CajaWindowPaneClass *class);
-static void caja_window_pane_dispose    (GObject *object);
-
-G_DEFINE_TYPE (CajaWindowPane,
-               caja_window_pane,
+G_DEFINE_TYPE (CajaWindowPane, caja_window_pane,
                G_TYPE_OBJECT)
 #define parent_class caja_window_pane_parent_class
 
+static void
+real_sync_location_widgets (CajaWindowPane *pane)
+{
+	CajaWindowSlot *slot;
+
+	/* TODO: Would be nice with a real subclass for spatial panes */
+	g_assert (CAJA_IS_SPATIAL_WINDOW (pane->window));
+
+	slot = pane->active_slot;
+
+	/* Change the location button to match the current location. */
+	caja_spatial_window_set_location_button (CAJA_SPATIAL_WINDOW (pane->window),
+						     slot->location);
+}
 
 static inline CajaWindowSlot *
 get_first_inactive_slot (CajaWindowPane *pane)
@@ -56,101 +65,26 @@ get_first_inactive_slot (CajaWindowPane *pane)
     return NULL;
 }
 
-void
-caja_window_pane_show (CajaWindowPane *pane)
+static void
+caja_window_pane_dispose (GObject *object)
 {
-    pane->visible = TRUE;
-    EEL_CALL_METHOD (CAJA_WINDOW_PANE_CLASS, pane,
-                     show, (pane));
-}
+    CajaWindowPane *pane = CAJA_WINDOW_PANE (object);
 
-void
-caja_window_pane_slot_close (CajaWindowPane *pane, CajaWindowSlot *slot)
-{
-    CajaWindowSlot *next_slot;
+    g_assert (pane->slots == NULL);
 
-    if (pane->window)
-    {
-        CajaWindow *window;
-        window = pane->window;
-        if (pane->active_slot == slot) {
-            next_slot = get_first_inactive_slot (CAJA_WINDOW_PANE (pane));
-            caja_window_set_active_slot (window, next_slot);
-        }
-        caja_window_close_slot (slot);
-
-        /* If that was the last slot in the active pane, close the pane or even the whole window. */
-        if (window->details->active_pane->slots == NULL)
-        {
-            CajaWindowPane *next_pane;
-            next_pane = caja_window_get_next_pane (window);
-
-            /* If next_pane is non-NULL, we have more than one pane available. In this
-             * case, close the current pane and switch to the next one. If there is
-             * no next pane, close the window. */
-            if(next_pane)
-            {
-                caja_window_close_pane (pane);
-                caja_window_pane_switch_to (next_pane);
-                if (CAJA_IS_NAVIGATION_WINDOW (window))
-                {
-                    caja_navigation_window_update_show_hide_menu_items (CAJA_NAVIGATION_WINDOW (window));
-                }
-            }
-            else
-            {
-                caja_window_close (window);
-            }
-        }
-    }
+    pane->window = NULL;
+    G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
-real_sync_location_widgets (CajaWindowPane *pane)
+caja_window_pane_class_init (CajaWindowPaneClass *klass)
 {
-    CajaWindowSlot *slot;
+    GObjectClass *oclass = G_OBJECT_CLASS (klass);
 
-    /* TODO: Would be nice with a real subclass for spatial panes */
-    g_assert (CAJA_IS_SPATIAL_WINDOW (pane->window));
-
-    slot = pane->active_slot;
-
-    /* Change the location button to match the current location. */
-    caja_spatial_window_set_location_button (CAJA_SPATIAL_WINDOW (pane->window),
-            slot->location);
+    oclass->dispose = caja_window_pane_dispose;
+    klass->sync_location_widgets = real_sync_location_widgets;
 }
 
-
-void
-caja_window_pane_sync_location_widgets (CajaWindowPane *pane)
-{
-    EEL_CALL_METHOD (CAJA_WINDOW_PANE_CLASS, pane,
-                     sync_location_widgets, (pane));
-}
-
-void
-caja_window_pane_sync_search_widgets (CajaWindowPane *pane)
-{
-    g_assert (CAJA_IS_WINDOW_PANE (pane));
-
-    EEL_CALL_METHOD (CAJA_WINDOW_PANE_CLASS, pane,
-                     sync_search_widgets, (pane));
-}
-
-void
-caja_window_pane_grab_focus (CajaWindowPane *pane)
-{
-    if (CAJA_IS_WINDOW_PANE (pane) && pane->active_slot)
-    {
-        caja_view_grab_focus (pane->active_slot->content_view);
-    }
-}
-
-void
-caja_window_pane_switch_to (CajaWindowPane *pane)
-{
-    caja_window_pane_grab_focus (pane);
-}
 
 static void
 caja_window_pane_init (CajaWindowPane *pane)
@@ -158,6 +92,33 @@ caja_window_pane_init (CajaWindowPane *pane)
     pane->slots = NULL;
     pane->active_slot = NULL;
     pane->is_active = FALSE;
+}
+
+CajaWindowPane *
+caja_window_pane_new (CajaWindow *window)
+{
+    CajaWindowPane *pane;
+
+    pane = g_object_new (CAJA_TYPE_WINDOW_PANE, NULL);
+    pane->window = window;
+    return pane;
+}
+
+CajaWindowSlot *
+caja_window_pane_get_slot_for_content_box (CajaWindowPane *pane,
+					   GtkWidget *content_box)
+{
+    CajaWindowSlot *slot;
+    GList *l;
+
+    for (l = pane->slots; l != NULL; l = l->next) {
+    	slot = CAJA_WINDOW_SLOT (l->data);
+
+    	if (slot->content_box == content_box) {
+    		return slot;
+    	}
+    }
+    return NULL;
 }
 
 void
@@ -177,49 +138,66 @@ caja_window_pane_set_active (CajaWindowPane *pane, gboolean is_active)
                      set_active, (pane, is_active));
 }
 
-static void
-caja_window_pane_class_init (CajaWindowPaneClass *class)
+void
+caja_window_pane_show (CajaWindowPane *pane)
 {
-    G_OBJECT_CLASS (class)->dispose = caja_window_pane_dispose;
-    CAJA_WINDOW_PANE_CLASS (class)->sync_location_widgets = real_sync_location_widgets;
+    pane->visible = TRUE;
+    EEL_CALL_METHOD (CAJA_WINDOW_PANE_CLASS, pane,
+		     show, (pane));
 }
 
-static void
-caja_window_pane_dispose (GObject *object)
+void
+caja_window_pane_sync_location_widgets (CajaWindowPane *pane)
 {
-    CajaWindowPane *pane = CAJA_WINDOW_PANE (object);
-
-    g_assert (pane->slots == NULL);
-
-    pane->window = NULL;
-    G_OBJECT_CLASS (parent_class)->dispose (object);
+    EEL_CALL_METHOD (CAJA_WINDOW_PANE_CLASS, pane,
+		     sync_location_widgets, (pane));
 }
 
-CajaWindowPane *
-caja_window_pane_new (CajaWindow *window)
+void
+caja_window_pane_sync_search_widgets (CajaWindowPane *pane)
 {
-    CajaWindowPane *pane;
-
-    pane = g_object_new (CAJA_TYPE_WINDOW_PANE, NULL);
-    pane->window = window;
-    return pane;
+    EEL_CALL_METHOD (CAJA_WINDOW_PANE_CLASS, pane,
+    		     sync_search_widgets, (pane));
 }
 
-CajaWindowSlot *
-caja_window_pane_get_slot_for_content_box (CajaWindowPane *pane,
-        GtkWidget *content_box)
+void
+caja_window_pane_slot_close (CajaWindowPane *pane, CajaWindowSlot *slot)
 {
-    CajaWindowSlot *slot;
-    GList *l;
+    CajaWindowSlot *next_slot;
 
-    for (l = pane->slots; l != NULL; l = l->next)
-    {
-        slot = CAJA_WINDOW_SLOT (l->data);
+    if (pane->window) {
+    	CajaWindow *window;
+    	window = pane->window;
+    	if (pane->active_slot == slot) {
+    		next_slot = get_first_inactive_slot (CAJA_WINDOW_PANE (pane));
+    		caja_window_set_active_slot (window, next_slot);
+    	}
+    	caja_window_close_slot (slot);
 
-        if (slot->content_box == content_box)
-        {
-            return slot;
-        }
+    	/* If that was the last slot in the active pane, close the pane or even the whole window. */
+    	if (window->details->active_pane->slots == NULL) {
+    		CajaWindowPane *next_pane;
+		next_pane = caja_window_get_next_pane (window);
+			
+		/* If next_pane is non-NULL, we have more than one pane available. In this
+		 * case, close the current pane and switch to the next one. If there is
+		 * no next pane, close the window. */
+		if(next_pane) {
+			caja_window_close_pane (pane);
+			if (CAJA_IS_NAVIGATION_WINDOW (window)) {
+				caja_navigation_window_update_show_hide_menu_items (CAJA_NAVIGATION_WINDOW (window));
+			}
+		} else {
+			caja_window_close (window);
+		}
+	}
     }
-    return NULL;
+}
+
+void
+caja_window_pane_grab_focus (CajaWindowPane *pane)
+{
+    if (CAJA_IS_WINDOW_PANE (pane) && pane->active_slot) {
+    	caja_view_grab_focus (pane->active_slot->content_view);
+    }	
 }

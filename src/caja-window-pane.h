@@ -85,7 +85,6 @@ void caja_window_pane_set_active (CajaWindowPane *pane, gboolean is_active);
 void caja_window_pane_slot_close (CajaWindowPane *pane, CajaWindowSlot *slot);
 
 CajaWindowSlot* caja_window_pane_get_slot_for_content_box (CajaWindowPane *pane, GtkWidget *content_box);
-void caja_window_pane_switch_to (CajaWindowPane *pane);
 void caja_window_pane_grab_focus (CajaWindowPane *pane);
 
 
