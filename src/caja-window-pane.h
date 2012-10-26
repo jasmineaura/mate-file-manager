@@ -80,10 +80,6 @@ CajaWindowPane *caja_window_pane_new (CajaWindow *window);
 
 
 void caja_window_pane_show (CajaWindowPane *pane);
-void caja_window_pane_zoom_in (CajaWindowPane *pane);
-void caja_window_pane_zoom_to_level (CajaWindowPane *pane, CajaZoomLevel level);
-void caja_window_pane_zoom_out (CajaWindowPane *pane);
-void caja_window_pane_zoom_to_default (CajaWindowPane *pane);
 void caja_window_pane_sync_location_widgets (CajaWindowPane *pane);
 void caja_window_pane_sync_search_widgets  (CajaWindowPane *pane);
 void caja_window_pane_set_active (CajaWindowPane *pane, gboolean is_active);

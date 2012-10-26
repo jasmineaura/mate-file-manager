@@ -468,37 +468,41 @@ caja_window_get_location_uri (CajaWindow *window)
     return NULL;
 }
 
+static CajaView *
+caja_window_get_active_view (CajaWindow *window)
+{
+	CajaWindowSlot *slot;
+	CajaView *view;
+
+	slot = window->details->active_pane->active_slot;
+	view = slot->content_view;
+
+	return view;
+}
+
 void
 caja_window_zoom_in (CajaWindow *window)
 {
-    g_assert (window != NULL);
-
-    caja_window_pane_zoom_in (window->details->active_pane);
+    caja_view_bump_zoom_level (caja_window_get_active_view (window), 1);
 }
 
 void
 caja_window_zoom_to_level (CajaWindow *window,
                            CajaZoomLevel level)
 {
-    g_assert (window != NULL);
-
-    caja_window_pane_zoom_to_level (window->details->active_pane, level);
+    caja_view_zoom_to_level (caja_window_get_active_view (window), level);
 }
 
 void
 caja_window_zoom_out (CajaWindow *window)
 {
-    g_assert (window != NULL);
-
-    caja_window_pane_zoom_out (window->details->active_pane);
+    caja_view_bump_zoom_level (caja_window_get_active_view (window), -1);
 }
 
 void
 caja_window_zoom_to_default (CajaWindow *window)
 {
-    g_assert (window != NULL);
-
-    caja_window_pane_zoom_to_default (window->details->active_pane);
+    caja_view_restore_default_zoom_level (caja_window_get_active_view (window));
 }
 
 /* Code should never force the window taller than this size.
