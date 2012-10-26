@@ -161,17 +161,21 @@ caja_window_pane_sync_search_widgets (CajaWindowPane *pane)
 }
 
 void
-caja_window_pane_slot_close (CajaWindowPane *pane, CajaWindowSlot *slot)
+caja_window_pane_slot_close (CajaWindowPane *pane,
+			     CajaWindowSlot *slot)
 {
     CajaWindowSlot *next_slot;
 
     if (pane->window) {
     	CajaWindow *window;
+
     	window = pane->window;
+
     	if (pane->active_slot == slot) {
     		next_slot = get_first_inactive_slot (CAJA_WINDOW_PANE (pane));
     		caja_window_set_active_slot (window, next_slot);
     	}
+
     	caja_window_close_slot (slot);
 
     	/* If that was the last slot in the active pane, close the pane or even the whole window. */
@@ -184,6 +188,8 @@ caja_window_pane_slot_close (CajaWindowPane *pane, CajaWindowSlot *slot)
 		 * no next pane, close the window. */
 		if(next_pane) {
 			caja_window_close_pane (pane);
+			caja_window_set_active_pane (window, next_pane);
+
 			if (CAJA_IS_NAVIGATION_WINDOW (window)) {
 				caja_navigation_window_update_show_hide_menu_items (CAJA_NAVIGATION_WINDOW (window));
 			}
