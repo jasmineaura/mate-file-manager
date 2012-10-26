@@ -34,7 +34,6 @@
 #include <libcaja-private/caja-window-info.h>
 #include <libcaja-private/caja-search-directory.h>
 #include "caja-application.h"
-#include "caja-information-panel.h"
 #include "caja-side-pane.h"
 
 #define CAJA_TYPE_WINDOW caja_window_get_type()

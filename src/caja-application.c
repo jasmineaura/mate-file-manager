@@ -35,7 +35,6 @@
 #if ENABLE_EMPTY_VIEW
 #include "file-manager/fm-empty-view.h"
 #endif /* ENABLE_EMPTY_VIEW */
-#include "caja-information-panel.h"
 #include "caja-history-sidebar.h"
 #include "caja-places-sidebar.h"
 #include "caja-notes-viewer.h"
@@ -317,7 +316,6 @@ caja_application_init (CajaApplication *application)
 
     /* register sidebars */
     caja_places_sidebar_register ();
-    caja_information_panel_register ();
     fm_tree_view_register ();
     caja_history_sidebar_register ();
     caja_notes_viewer_register (); /* also property page */

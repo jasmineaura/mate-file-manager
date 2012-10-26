@@ -73,8 +73,6 @@ caja_SOURCES = \
 	caja-history-sidebar.h \
 	caja-image-properties-page.c \
 	caja-image-properties-page.h \
-	caja-information-panel.c \
-	caja-information-panel.h \
 	caja-location-bar.c \
 	caja-location-bar.h \
 	caja-location-dialog.c \

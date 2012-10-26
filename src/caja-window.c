@@ -31,7 +31,6 @@
 #include "caja-actions.h"
 #include "caja-application.h"
 #include "caja-bookmarks-window.h"
-#include "caja-information-panel.h"
 #include "caja-main.h"
 #include "caja-window-manage-views.h"
 #include "caja-window-bookmarks.h"
