@@ -150,7 +150,7 @@ static void
 action_split_view_switch_next_pane_callback(GtkAction *action,
         gpointer user_data)
 {
-    caja_window_pane_switch_to (caja_window_get_next_pane (CAJA_WINDOW (user_data)));
+    caja_window_pane_grab_focus (caja_window_get_next_pane (CAJA_WINDOW (user_data)));
 }
 
 static void
