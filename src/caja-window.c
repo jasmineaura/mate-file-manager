@@ -41,7 +41,6 @@
 #include "caja-navigation-window-pane.h"
 #include "caja-src-marshal.h"
 #include <eel/eel-debug.h>
-#include <eel/eel-marshal.h>
 #include <eel/eel-gtk-macros.h>
 #include <eel/eel-string.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
