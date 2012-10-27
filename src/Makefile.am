@@ -110,8 +110,6 @@ caja_SOURCES = \
 	caja-self-check-functions.h \
 	caja-side-pane.c \
 	caja-side-pane.h \
-	caja-sidebar-title.c \
-	caja-sidebar-title.h \
 	caja-spatial-window.c \
 	caja-spatial-window.h \
 	caja-trash-bar.c \
