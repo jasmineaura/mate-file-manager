@@ -53,10 +53,10 @@ extern "C" {
         GtkInfoBarClass parent_class;
     } CajaXContentBarClass;
 
-    GType		 caja_x_content_bar_get_type	(void) G_GNUC_CONST;
+    GType	caja_x_content_bar_get_type	(void) G_GNUC_CONST;
 
     GtkWidget	*caja_x_content_bar_new		   (GMount              *mount,
-					            const char          *x_content_type);
+					            const char          **x_content_types);
 
 #ifdef __cplusplus
 }
