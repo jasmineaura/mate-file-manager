@@ -523,11 +523,6 @@ eel_canvas_item_set_valist (EelCanvasItem *item, const gchar *first_arg_name, va
 
     g_object_set_valist (G_OBJECT (item), first_arg_name, args);
 
-#if 0
-    /* I commented this out, because item implementations have to schedule update/redraw */
-    eel_canvas_item_request_redraw (item);
-#endif
-
     item->canvas->need_repick = TRUE;
 }
 
@@ -1752,12 +1747,7 @@ eel_canvas_group_bounds (EelCanvasItem *item, double *x1, double *y1, double *x2
 static void
 group_add (EelCanvasGroup *group, EelCanvasItem *item)
 {
-#if GLIB_CHECK_VERSION(2,10,0) && GTK_CHECK_VERSION(2,8,14)
     g_object_ref_sink (item);
-#else
-    g_object_ref (item);
-    gtk_object_sink (GTK_OBJECT (item));
-#endif
 
     if (!group->item_list)
     {
