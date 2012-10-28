@@ -287,15 +287,17 @@ caja_x_content_bar_class_init (CajaXContentBarClass *klass)
 static void
 caja_x_content_bar_init (CajaXContentBar *bar)
 {
+    GtkWidget *content_area;
+
     bar->priv = CAJA_X_CONTENT_BAR_GET_PRIVATE (bar);
+    content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (bar));
 
     bar->priv->label = gtk_label_new (NULL);
     // Uncomment when moving to GTK3
     //gtk_style_context_add_class (gtk_widget_get_style_context (bar->priv->label),
     //				 "caja-cluebar-label");
     gtk_label_set_ellipsize (GTK_LABEL (bar->priv->label), PANGO_ELLIPSIZE_END);
-    gtk_misc_set_alignment (GTK_MISC (bar->priv->label), 0.0, 0.5);
-    gtk_container_add (GTK_CONTAINER (bar), bar->priv->label);
+    gtk_container_add (GTK_CONTAINER (content_area), bar->priv->label);
 
     bar->priv->button = gtk_info_bar_add_button (GTK_INFO_BAR (bar),
     						 "",
