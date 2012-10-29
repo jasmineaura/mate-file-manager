@@ -29,7 +29,6 @@
 #include "caja-directory-notify.h"
 #include "caja-directory-private.h"
 #include "caja-file-private.h"
-#include "caja-autorun.h"
 #include <eel/eel-gtk-macros.h>
 #include <glib/gi18n.h>
 

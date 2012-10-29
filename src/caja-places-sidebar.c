@@ -44,7 +44,6 @@
 #include <libcaja-private/caja-file-operations.h>
 #include <libcaja-private/caja-trash-monitor.h>
 #include <libcaja-private/caja-icon-names.h>
-#include <libcaja-private/caja-autorun.h>
 #include <libcaja-private/caja-window-info.h>
 #include <libcaja-private/caja-window-slot-info.h>
 #include <gio/gio.h>

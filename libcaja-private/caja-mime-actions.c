@@ -35,7 +35,6 @@
 
 #include "caja-file-attributes.h"
 #include "caja-file.h"
-#include "caja-autorun.h"
 #include "caja-file-operations.h"
 #include "caja-metadata.h"
 #include "caja-program-choosing.h"

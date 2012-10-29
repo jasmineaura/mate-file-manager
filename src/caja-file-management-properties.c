@@ -40,8 +40,6 @@
 #include <libcaja-private/caja-global-preferences.h>
 #include <libcaja-private/caja-module.h>
 
-#include <libcaja-private/caja-autorun.h>
-
 /* string enum preferences */
 #define CAJA_FILE_MANAGEMENT_PROPERTIES_DEFAULT_VIEW_WIDGET "default_view_combobox"
 #define CAJA_FILE_MANAGEMENT_PROPERTIES_ICON_VIEW_ZOOM_WIDGET "icon_view_zoom_combobox"
