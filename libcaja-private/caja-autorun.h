@@ -36,9 +36,7 @@
 #ifndef CAJA_AUTORUN_H
 #define CAJA_AUTORUN_H
 
-#include <gtk/gtk.h>
-#include <eel/eel-background.h>
-#include <libcaja-private/caja-file.h>
+#include <gio/gio.h>
 
 typedef void (*CajaAutorunGetContent) (char **content, gpointer user_data);
 

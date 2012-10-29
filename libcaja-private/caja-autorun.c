@@ -27,21 +27,9 @@
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
-#include <gio/gdesktopappinfo.h>
-#include <X11/XKBlib.h>
-#include <gdk/gdkkeysyms.h>
 
-#include <eel/eel-glib-extensions.h>
-
-#include "caja-icon-info.h"
-#include "caja-global-preferences.h"
-#include "caja-file-operations.h"
 #include "caja-autorun.h"
 #include "caja-program-choosing.h"
-#include "caja-open-with-dialog.h"
-#include "caja-desktop-icon-file.h"
-#include "caja-file-utilities.h"
 
 
 void
