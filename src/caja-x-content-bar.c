@@ -29,8 +29,8 @@
 #include <string.h>
 
 #include "caja-x-content-bar.h"
-#include <libcaja-private/caja-autorun.h>
 #include <libcaja-private/caja-icon-info.h>
+#include <libcaja-private/caja-program-choosing.h>
 
 #define CAJA_X_CONTENT_BAR_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), CAJA_TYPE_X_CONTENT_BAR, CajaXContentBarPrivate))
 
@@ -288,7 +288,8 @@ button_clicked_callback (GtkWidget *button, CajaXContentBar *bar)
     default_app = g_app_info_get_default_for_type (bar->priv->x_content_type, FALSE);
     if (default_app != NULL)
     {
-        caja_autorun_launch_for_mount (bar->priv->mount, default_app);
+	caja_launch_application_for_mount (default_app, bar->priv->mount,
+					   GTK_WINDOW (gtk_widget_get_toplevel (button)));
         g_object_unref (default_app);
     }
 }

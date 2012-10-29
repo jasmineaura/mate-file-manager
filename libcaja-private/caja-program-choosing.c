@@ -138,6 +138,27 @@ application_cannot_open_location (GAppInfo *application,
 #endif
 }
 
+void
+caja_launch_application_for_mount (GAppInfo *app_info,
+				   GMount *mount,
+				   GtkWindow *parent_window)
+{
+	GFile *root;
+	CajaFile *file;
+	GList *files;
+
+	root = g_mount_get_root (mount);
+	file = caja_file_get (root);
+	g_object_unref (root);
+
+	files = g_list_append (NULL, file);
+	caja_launch_application (app_info,
+				 files,
+				 parent_window);
+
+	g_list_free_full (files, (GDestroyNotify) caja_file_unref);
+}
+
 /**
  * caja_launch_application:
  *
