@@ -42,8 +42,6 @@ libcaja_private_la_LIBADD = \
 	$(NULL)
 
 libcaja_private_la_SOURCES = \
-	caja-autorun.c \
-	caja-autorun.h \
 	caja-bookmark.c \
 	caja-bookmark.h \
 	caja-cell-renderer-text-ellipsized.c \

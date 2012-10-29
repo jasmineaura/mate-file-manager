@@ -16,7 +16,6 @@ libcaja-extension/caja-column.c
 libcaja-extension/caja-menu-item.c
 libcaja-extension/caja-property-page.c
 libcaja-private/apps_caja_preferences.schemas.in
-libcaja-private/caja-autorun.c
 libcaja-private/caja-clipboard.c
 libcaja-private/caja-column-chooser.c
 libcaja-private/caja-column-utilities.c
