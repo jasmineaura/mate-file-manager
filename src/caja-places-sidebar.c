@@ -3345,6 +3345,11 @@ caja_places_sidebar_dispose (GObject *object)
         sidebar->bookmarks = NULL;
     }
 
+    if (sidebar->filter_model != NULL) {
+        g_object_unref (sidebar->filter_model);
+        sidebar->filter_model = NULL;
+    }
+
     eel_remove_weak_pointer (&(sidebar->go_to_after_mount_slot));
 
     g_signal_handlers_disconnect_by_func (caja_preferences,
