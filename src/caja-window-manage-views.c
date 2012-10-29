@@ -66,7 +66,6 @@
 #include <libcaja-private/caja-view-factory.h>
 #include <libcaja-private/caja-window-info.h>
 #include <libcaja-private/caja-window-slot-info.h>
-#include <libcaja-private/caja-autorun.h>
 
 /* FIXME bugzilla.gnome.org 41243:
  * We should use inheritance instead of these special cases
@@ -1703,9 +1702,11 @@ typedef struct
 } FindMountData;
 
 static void
-found_content_type_cb (const char **x_content_types, FindMountData *data)
+found_content_type_cb (const char **x_content_types,
+		       gpointer user_data)
 {
     CajaWindowSlot *slot;
+	FindMountData *data = user_data;
 
     if (g_cancellable_is_cancelled (data->cancellable))
     {
@@ -1749,10 +1750,10 @@ found_mount_cb (GObject *source_object,
     if (mount != NULL)
     {
         data->mount = mount;
-        caja_autorun_get_x_content_types_for_mount_async (mount,
-                (CajaAutorunGetContent)found_content_type_cb,
-                data->cancellable,
-                data);
+		caja_get_x_content_types_for_mount_async (mount,
+							      found_content_type_cb,
+							      data->cancellable,
+							      data);
         return;
     }
 

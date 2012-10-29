@@ -104,4 +104,12 @@ GHashTable * caja_trashed_files_get_original_directories (GList *files,
 void caja_restore_files_from_trash (GList *files,
                                     GtkWindow *parent_window);
 
+typedef void (*CajaMountGetContent) (const char **content, gpointer user_data);
+
+char ** caja_get_cached_x_content_types_for_mount (GMount *mount);
+void caja_get_x_content_types_for_mount_async (GMount *mount,
+						   CajaMountGetContent callback,
+						   GCancellable *cancellable,
+						   gpointer user_data);
+
 #endif /* CAJA_FILE_UTILITIES_H */

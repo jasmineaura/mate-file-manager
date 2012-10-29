@@ -78,7 +78,6 @@
 #include <libcaja-private/caja-trash-monitor.h>
 #include <libcaja-private/caja-ui-utilities.h>
 #include <libcaja-private/caja-signaller.h>
-#include <libcaja-private/caja-autorun.h>
 #include <libcaja-private/caja-icon-names.h>
 #include <libcaja-private/caja-undostack-manager.h>
 
@@ -4536,7 +4535,7 @@ add_application_to_open_with_menu (FMDirectoryView *view,
 }
 
 static void
-get_x_content_async_callback (char **content,
+get_x_content_async_callback (const char **content,
 			      gpointer user_data)
 {
 	FMDirectoryView *view;
@@ -4564,7 +4563,7 @@ add_x_content_apps (FMDirectoryView *view, CajaFile *file, GList **applications)
 		return;
 	}
 
-	x_content_types = caja_autorun_get_cached_x_content_types_for_mount (mount);
+	x_content_types = caja_get_cached_x_content_types_for_mount (mount);
 	if (x_content_types != NULL) {
 		for (n = 0; x_content_types[n] != NULL; n++) {
 			char *x_content_type = x_content_types[n];
@@ -4575,10 +4574,10 @@ add_x_content_apps (FMDirectoryView *view, CajaFile *file, GList **applications)
 		}
 		g_strfreev (x_content_types);
 	} else {
-		caja_autorun_get_x_content_types_for_mount_async (mount,
-								      get_x_content_async_callback,
-								      NULL,
-								      g_object_ref (view));
+		caja_get_x_content_types_for_mount_async (mount,
+							      get_x_content_async_callback,
+							      NULL,
+							      g_object_ref (view));
 
 	}
 
