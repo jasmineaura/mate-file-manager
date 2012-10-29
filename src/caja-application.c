@@ -72,7 +72,6 @@
 #include <libcaja-private/caja-directory-private.h>
 #include <libcaja-private/caja-signaller.h>
 #include <libcaja-extension/caja-menu-provider.h>
-#include <libcaja-private/caja-autorun.h>
 
 enum {
 	COMMAND_0, /* unused: 0 is an invalid command */
@@ -110,9 +109,6 @@ static void     mount_removed_callback            (GVolumeMonitor            *mo
 static void     mount_added_callback              (GVolumeMonitor            *monitor,
         GMount                    *mount,
         CajaApplication       *application);
-static void     volume_added_callback              (GVolumeMonitor           *monitor,
-        GVolume                  *volume,
-        CajaApplication      *application);
 static void     drive_connected_callback           (GVolumeMonitor           *monitor,
         GDrive                   *drive,
         CajaApplication      *application);
@@ -688,8 +684,6 @@ finish_startup (CajaApplication *application,
                              G_CALLBACK (mount_removed_callback), application, 0);
     g_signal_connect_object (application->volume_monitor, "mount_added",
                              G_CALLBACK (mount_added_callback), application, 0);
-    g_signal_connect_object (application->volume_monitor, "volume_added",
-                             G_CALLBACK (volume_added_callback), application, 0);
     g_signal_connect_object (application->volume_monitor, "drive_connected",
                              G_CALLBACK (drive_connected_callback), application, 0);
 
@@ -1513,27 +1507,6 @@ window_can_be_closed (CajaWindow *window)
 }
 
 static void
-volume_added_callback (GVolumeMonitor *monitor,
-                       GVolume *volume,
-                       CajaApplication *application)
-{
-    if (g_settings_get_boolean (caja_media_preferences, CAJA_PREFERENCES_MEDIA_AUTOMOUNT) &&
-            g_volume_should_automount (volume) &&
-            g_volume_can_mount (volume))
-    {
-        caja_file_operations_mount_volume (NULL, volume, TRUE);
-    }
-    else
-    {
-        /* Allow caja_autorun() to run. When the mount is later
-         * added programmatically (i.e. for a blank CD),
-         * caja_autorun() will be called by mount_added_callback(). */
-        caja_allow_autorun_for_volume (volume);
-        caja_allow_autorun_for_volume_finish (volume);
-    }
-}
-
-static void
 drive_eject_cb (GObject *source_object,
                 GAsyncResult *res,
                 gpointer user_data)
@@ -1587,38 +1560,6 @@ drive_connected_callback (GVolumeMonitor *monitor,
 }
 
 static void
-autorun_show_window (GMount *mount, gpointer user_data)
-{
-    GFile *location;
-    CajaApplication *application = user_data;
-    CajaWindow *window;
-    gboolean existing;
-
-    location = g_mount_get_root (mount);
-    existing = FALSE;
-
-    /* There should probably be an easier way to do this */
-    if (g_settings_get_boolean (caja_preferences, CAJA_PREFERENCES_ALWAYS_USE_BROWSER)) {
-        window = caja_application_create_navigation_window (application,
-                                                            NULL,
-                                                            gdk_screen_get_default ());
-    }
-    else
-    {
-        window = caja_application_get_spatial_window (application,
-                                                      NULL,
-                                                      NULL,
-                                                      location,
-                                                      gdk_screen_get_default (),
-                                                      NULL);
-    }
-
-    caja_window_go_to (window, location);
-
-    g_object_unref (location);
-}
-
-static void
 mount_added_callback (GVolumeMonitor *monitor,
                       GMount *mount,
                       CajaApplication *application)
@@ -1639,8 +1580,6 @@ mount_added_callback (GVolumeMonitor *monitor,
         caja_directory_force_reload (directory);
         caja_directory_unref (directory);
     }
-
-    caja_autorun (mount, autorun_show_window, application);
 }
 
 static CajaWindowSlot *
