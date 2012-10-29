@@ -211,7 +211,7 @@ caja-marshal.list: $(libcaja_private_la_SOURCES) Makefile.am
 	$(AM_V_GEN)echo "#include \"caja-marshal.h\"" > $@ && \
 	$(GLIB_GENMARSHAL) --body --prefix=$(subst -,_,$*)_marshal $< >> $*-marshal.c
 
-gsettingsschema_in_files = org.mate.caja.gschema.xml.in org.mate.media-handling.gschema.xml.in
+gsettingsschema_in_files = org.mate.caja.gschema.xml.in
 gsettings_SCHEMAS = $(gsettingsschema_in_files:.xml.in=.xml)
 .PRECIOUS: $(gsettings_SCHEMAS)
 
