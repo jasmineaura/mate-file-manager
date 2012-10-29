@@ -218,51 +218,6 @@ caja_application_get_n_windows (void)
 }
 
 static void
-startup_volume_mount_cb (GObject *source_object,
-                         GAsyncResult *res,
-                         gpointer user_data)
-{
-    g_volume_mount_finish (G_VOLUME (source_object), res, NULL);
-}
-
-static void
-automount_all_volumes (CajaApplication *application)
-{
-    GList *volumes, *l;
-    GMount *mount;
-    GVolume *volume;
-
-    if (g_settings_get_boolean (caja_media_preferences, CAJA_PREFERENCES_MEDIA_AUTOMOUNT))
-    {
-        /* automount all mountable volumes at start-up */
-        volumes = g_volume_monitor_get_volumes (application->volume_monitor);
-        for (l = volumes; l != NULL; l = l->next)
-        {
-            volume = l->data;
-
-            if (!g_volume_should_automount (volume) ||
-                    !g_volume_can_mount (volume))
-            {
-                continue;
-            }
-
-            mount = g_volume_get_mount (volume);
-            if (mount != NULL)
-            {
-                g_object_unref (mount);
-                continue;
-            }
-
-            /* pass NULL as GMountOperation to avoid user interaction */
-            g_volume_mount (volume, 0, NULL, NULL, startup_volume_mount_cb, NULL);
-        }
-    	g_list_foreach(volumes, (GFunc) g_object_unref, NULL);
-    	g_list_free(volumes);
-    }
-
-}
-
-static void
 smclient_save_state_cb (EggSMClient   *client,
                         GKeyFile      *state_file,
                         CajaApplication *application)
@@ -352,12 +307,6 @@ caja_application_finalize (GObject *object)
     }
 
     g_object_unref (application->unique_app);
-
-    if (application->automount_idle_id != 0)
-    {
-        g_source_remove (application->automount_idle_id);
-        application->automount_idle_id = 0;
-    }
 
     if (application->proxy != NULL)
     {
@@ -471,17 +420,6 @@ menu_provider_init_callback (void)
     }
 
     caja_module_extension_list_free (providers);
-}
-
-static gboolean
-automount_all_volumes_idle_cb (gpointer data)
-{
-    CajaApplication *application = CAJA_APPLICATION (data);
-
-    automount_all_volumes (application);
-
-    application->automount_idle_id = 0;
-    return FALSE;
 }
 
 static void
@@ -760,11 +698,6 @@ finish_startup (CajaApplication *application,
     g_list_foreach (drives, (GFunc) drive_listen_for_eject_button, application);
     g_list_foreach (drives, (GFunc) g_object_unref, NULL);
     g_list_free (drives);
-
-    application->automount_idle_id =
-        g_idle_add_full (G_PRIORITY_LOW,
-                         automount_all_volumes_idle_cb,
-                         application, NULL);
 }
 
 static void
