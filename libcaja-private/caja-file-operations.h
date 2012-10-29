@@ -101,11 +101,9 @@ void caja_file_operations_unmount_mount_full (GtkWindow                 *parent_
         CajaUnmountCallback    callback,
         gpointer                   callback_data);
 void caja_file_operations_mount_volume  (GtkWindow                      *parent_window,
-        GVolume                        *volume,
-        gboolean                        allow_autorun);
+        GVolume                        *volume);
 void caja_file_operations_mount_volume_full (GtkWindow                      *parent_window,
         GVolume                        *volume,
-        gboolean                        allow_autorun,
         CajaMountCallback           mount_callback,
         GObject                        *mount_callback_data_object);
 

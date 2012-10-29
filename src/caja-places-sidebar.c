@@ -1964,7 +1964,7 @@ open_selected_bookmark (CajaPlacesSidebar *sidebar,
 
             sidebar->go_to_after_mount_flags = flags;
 
-            caja_file_operations_mount_volume_full (NULL, volume, FALSE,
+            caja_file_operations_mount_volume_full (NULL, volume,
                                                     volume_mounted_cb,
                                                     G_OBJECT (sidebar));
         }
@@ -2106,7 +2106,7 @@ mount_shortcut_cb (GtkMenuItem           *item,
 
     if (volume != NULL)
     {
-        caja_file_operations_mount_volume (NULL, volume, FALSE);
+        caja_file_operations_mount_volume (NULL, volume);
         g_object_unref (volume);
     }
 }

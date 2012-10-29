@@ -62,7 +62,6 @@
 #include "caja-desktop-link-monitor.h"
 #include "caja-global-preferences.h"
 #include "caja-link.h"
-#include "caja-autorun.h"
 #include "caja-trash-monitor.h"
 #include "caja-file-utilities.h"
 #include "caja-file-conflict-dialog.h"
@@ -2330,7 +2329,6 @@ volume_mount_cb (GObject *source_object,
 	char *name;
 
 	error = NULL;
-	caja_allow_autorun_for_volume_finish (G_VOLUME (source_object));
 	if (!g_volume_mount_finish (G_VOLUME (source_object), res, &error)) {
 		if (error->code != G_IO_ERROR_FAILED_HANDLED) {
 			name = g_volume_get_name (G_VOLUME (source_object));
@@ -2366,17 +2364,15 @@ volume_mount_cb (GObject *source_object,
 
 void
 caja_file_operations_mount_volume (GtkWindow *parent_window,
-				       GVolume *volume,
-				       gboolean allow_autorun)
+				       GVolume *volume)
 {
 	caja_file_operations_mount_volume_full (parent_window, volume,
-						    allow_autorun, NULL, NULL);
+						NULL, NULL);
 }
 
 void
 caja_file_operations_mount_volume_full (GtkWindow *parent_window,
 					    GVolume *volume,
-					    gboolean allow_autorun,
 					    CajaMountCallback mount_callback,
 					    GObject *mount_callback_data_object)
 {
@@ -2398,8 +2394,6 @@ caja_file_operations_mount_volume_full (GtkWindow *parent_window,
 			   "mount-callback-data",
 			   mount_callback_data_object);
 
-	if (allow_autorun)
-		caja_allow_autorun_for_volume (volume);
 	g_volume_mount (volume, 0, mount_op, NULL, volume_mount_cb, mount_op);
 }
 
