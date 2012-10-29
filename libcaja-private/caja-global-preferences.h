@@ -43,16 +43,6 @@ G_BEGIN_DECLS
 #define CAJA_PREFERENCES_SIDE_PANE_BACKGROUND_COLOR                   "side-pane-background-color"
 #define CAJA_PREFERENCES_SIDE_PANE_BACKGROUND_URI                "side-pane-background-uri"
 
-    /* Automount options */
-#define CAJA_PREFERENCES_MEDIA_AUTOMOUNT                "automount"
-#define CAJA_PREFERENCES_MEDIA_AUTOMOUNT_OPEN           "automount-open"
-
-    /* Autorun options */
-#define CAJA_PREFERENCES_MEDIA_AUTORUN_NEVER                 "autorun-never"
-#define CAJA_PREFERENCES_MEDIA_AUTORUN_X_CONTENT_START_APP   "autorun-x-content-start-app"
-#define CAJA_PREFERENCES_MEDIA_AUTORUN_X_CONTENT_IGNORE      "autorun-x-content-ignore"
-#define CAJA_PREFERENCES_MEDIA_AUTORUN_X_CONTENT_OPEN_FOLDER "autorun-x-content-open-folder"
-
     /* Trash options */
 #define CAJA_PREFERENCES_CONFIRM_TRASH			"confirm-trash"
 #define CAJA_PREFERENCES_ENABLE_DELETE			"enable-delete"
@@ -212,7 +202,6 @@ void caja_global_preferences_init                      (void);
 char *caja_global_preferences_get_default_folder_viewer_preference_as_iid (void);
 
 GSettings *caja_preferences;
-GSettings *caja_media_preferences;
 GSettings *caja_window_state;
 GSettings *caja_icon_view_preferences;
 GSettings *caja_desktop_preferences;
