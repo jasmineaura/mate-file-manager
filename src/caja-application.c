@@ -1589,8 +1589,9 @@ mount_removed_callback (GVolumeMonitor *monitor,
                 {
                     slot = l->data;
                     location = slot->location;
-                    if (g_file_has_prefix (location, root) ||
-                            g_file_equal (location, root))
+                    if (location == NULL ||
+                    	g_file_has_prefix (location, root) ||
+                        g_file_equal (location, root))
                     {
                         close_list = g_list_prepend (close_list, slot);
 
