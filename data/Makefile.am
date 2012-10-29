@@ -11,7 +11,6 @@ desktop_in_files = \
 	caja-home.desktop.in \
 	caja-computer.desktop.in \
 	caja-folder-handler.desktop.in \
-	caja-file-management-properties.desktop.in  \
 	caja-browser.desktop.in                     \
 	caja-autorun-software.desktop.in
 @INTLTOOL_DESKTOP_RULE@

@@ -66,8 +66,6 @@
 #define CAJA_FILE_MANAGEMENT_PROPERTIES_OPEN_NEW_WINDOW_WIDGET "new_window_checkbutton"
 #define CAJA_FILE_MANAGEMENT_PROPERTIES_SHOW_HIDDEN_WIDGET "hidden_files_checkbutton"
 #define CAJA_FILE_MANAGEMENT_PROPERTIES_TREE_VIEW_FOLDERS_WIDGET "treeview_folders_checkbutton"
-#define CAJA_FILE_MANAGEMENT_PROPERTIES_MEDIA_AUTOMOUNT_OPEN "media_automount_open_checkbutton"
-#define CAJA_FILE_MANAGEMENT_PROPERTIES_MEDIA_AUTORUN_NEVER "media_autorun_never_checkbutton"
 
 /* int enums */
 #define CAJA_FILE_MANAGEMENT_PROPERTIES_THUMBNAIL_LIMIT_WIDGET "preview_image_size_combobox"
@@ -174,8 +172,6 @@ static const char * const icon_captions_components[] =
     NULL
 };
 
-static void caja_file_management_properties_dialog_update_media_sensitivity (GtkBuilder *builder);
-
 static void
 caja_file_management_properties_size_group_create (GtkBuilder *builder,
         char *prefix,
@@ -268,12 +264,6 @@ caja_file_management_properties_dialog_response_cb (GtkDialog *parent,
             break;
         }
         preferences_show_help (GTK_WINDOW (parent), "user-guide", section);
-    }
-    else if (response_id == GTK_RESPONSE_CLOSE)
-    {
-        g_signal_handlers_disconnect_by_func (caja_media_preferences,
-                                              caja_file_management_properties_dialog_update_media_sensitivity,
-                                              builder);
     }
 }
 
@@ -564,158 +554,6 @@ caja_file_management_properties_dialog_setup_list_column_page (GtkBuilder *build
 }
 
 static void
-caja_file_management_properties_dialog_update_media_sensitivity (GtkBuilder *builder)
-{
-    gtk_widget_set_sensitive (GTK_WIDGET (gtk_builder_get_object (builder, "media_handling_vbox")),
-                              ! g_settings_get_boolean (caja_media_preferences, CAJA_PREFERENCES_MEDIA_AUTORUN_NEVER));
-}
-
-static void
-other_type_combo_box_changed (GtkComboBox *combo_box, GtkComboBox *action_combo_box)
-{
-    GtkTreeIter iter;
-    GtkTreeModel *model;
-    char *x_content_type;
-
-    x_content_type = NULL;
-
-    if (!gtk_combo_box_get_active_iter (combo_box, &iter))
-    {
-        goto out;
-    }
-
-    model = gtk_combo_box_get_model (combo_box);
-    if (model == NULL)
-    {
-        goto out;
-    }
-
-    gtk_tree_model_get (model, &iter,
-                        2, &x_content_type,
-                        -1);
-
-    caja_autorun_prepare_combo_box (GTK_WIDGET (action_combo_box),
-                                    x_content_type,
-                                    TRUE,
-                                    TRUE,
-                                    TRUE,
-                                    NULL, NULL);
-out:
-    g_free (x_content_type);
-}
-
-
-static void
-caja_file_management_properties_dialog_setup_media_page (GtkBuilder *builder)
-{
-    unsigned int n;
-    GList *l;
-    GList *content_types;
-    GtkWidget *other_type_combo_box;
-    GtkListStore *other_type_list_store;
-    GtkCellRenderer *renderer;
-    GtkTreeIter iter;
-    const char *s[] = {"media_audio_cdda_combobox",   "x-content/audio-cdda",
-                       "media_video_dvd_combobox",    "x-content/video-dvd",
-                       "media_music_player_combobox", "x-content/audio-player",
-                       "media_dcf_combobox",          "x-content/image-dcf",
-                       "media_software_combobox",     "x-content/software",
-                       NULL
-                      };
-
-    for (n = 0; s[n*2] != NULL; n++)
-    {
-        caja_autorun_prepare_combo_box (GTK_WIDGET (gtk_builder_get_object (builder, s[n*2])), s[n*2 + 1],
-                                        TRUE, TRUE, TRUE, NULL, NULL);
-    }
-
-    other_type_combo_box = GTK_WIDGET (gtk_builder_get_object (builder, "media_other_type_combobox"));
-
-    other_type_list_store = gtk_list_store_new (3,
-                            GDK_TYPE_PIXBUF,
-                            G_TYPE_STRING,
-                            G_TYPE_STRING);
-
-    gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (other_type_list_store),
-                                          1, GTK_SORT_ASCENDING);
-
-
-    content_types = g_content_types_get_registered ();
-
-    for (l = content_types; l != NULL; l = l->next)
-    {
-        char *content_type = l->data;
-        char *description;
-        GIcon *icon;
-        CajaIconInfo *icon_info;
-        GdkPixbuf *pixbuf;
-        int icon_size;
-
-        if (!g_str_has_prefix (content_type, "x-content/"))
-            continue;
-        for (n = 0; s[n*2] != NULL; n++)
-        {
-            if (strcmp (content_type, s[n*2 + 1]) == 0)
-            {
-                goto skip;
-            }
-        }
-
-        icon_size = caja_get_icon_size_for_stock_size (GTK_ICON_SIZE_MENU);
-
-        description = g_content_type_get_description (content_type);
-        gtk_list_store_append (other_type_list_store, &iter);
-        icon = g_content_type_get_icon (content_type);
-        if (icon != NULL)
-        {
-            icon_info = caja_icon_info_lookup (icon, icon_size);
-            g_object_unref (icon);
-            pixbuf = caja_icon_info_get_pixbuf_nodefault_at_size (icon_info, icon_size);
-            g_object_unref (icon_info);
-        }
-        else
-        {
-            pixbuf = NULL;
-        }
-
-        gtk_list_store_set (other_type_list_store, &iter,
-                            0, pixbuf,
-                            1, description,
-                            2, content_type,
-                            -1);
-        if (pixbuf != NULL)
-            g_object_unref (pixbuf);
-        g_free (description);
-skip:
-        ;
-    }
-    g_list_foreach (content_types, (GFunc) g_free, NULL);
-    g_list_free (content_types);
-
-    gtk_combo_box_set_model (GTK_COMBO_BOX (other_type_combo_box), GTK_TREE_MODEL (other_type_list_store));
-
-    renderer = gtk_cell_renderer_pixbuf_new ();
-    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (other_type_combo_box), renderer, FALSE);
-    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (other_type_combo_box), renderer,
-                                    "pixbuf", 0,
-                                    NULL);
-    renderer = gtk_cell_renderer_text_new ();
-    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (other_type_combo_box), renderer, TRUE);
-    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (other_type_combo_box), renderer,
-                                    "text", 1,
-                                    NULL);
-
-    g_signal_connect (G_OBJECT (other_type_combo_box),
-                      "changed",
-                      G_CALLBACK (other_type_combo_box_changed),
-                      gtk_builder_get_object (builder, "media_other_action_combobox"));
-
-    gtk_combo_box_set_active (GTK_COMBO_BOX (other_type_combo_box), 0);
-
-    caja_file_management_properties_dialog_update_media_sensitivity (builder);
-}
-
-static void
 bind_builder_bool (GtkBuilder *builder,
                    GSettings *settings,
                    const char *widget_name,
@@ -950,13 +788,6 @@ caja_file_management_properties_dialog_setup (GtkBuilder *builder, GtkWindow *wi
                                 CAJA_FILE_MANAGEMENT_PROPERTIES_ALWAYS_USE_BROWSER_WIDGET,
                                 CAJA_PREFERENCES_ALWAYS_USE_BROWSER);
 
-    bind_builder_bool (builder, caja_media_preferences,
-                       CAJA_FILE_MANAGEMENT_PROPERTIES_MEDIA_AUTOMOUNT_OPEN,
-                       CAJA_PREFERENCES_MEDIA_AUTOMOUNT_OPEN);
-    bind_builder_bool (builder, caja_media_preferences,
-                       CAJA_FILE_MANAGEMENT_PROPERTIES_MEDIA_AUTORUN_NEVER,
-                       CAJA_PREFERENCES_MEDIA_AUTORUN_NEVER);
-
     bind_builder_bool (builder, caja_preferences,
                        CAJA_FILE_MANAGEMENT_PROPERTIES_TRASH_CONFIRM_WIDGET,
                        CAJA_PREFERENCES_CONFIRM_TRASH);
@@ -1029,12 +860,6 @@ caja_file_management_properties_dialog_setup (GtkBuilder *builder, GtkWindow *wi
 
     caja_file_management_properties_dialog_setup_icon_caption_page (builder);
     caja_file_management_properties_dialog_setup_list_column_page (builder);
-    caja_file_management_properties_dialog_setup_media_page (builder);
-
-    g_signal_connect_swapped (caja_media_preferences,
-                              "changed::" CAJA_PREFERENCES_MEDIA_AUTORUN_NEVER,
-                              G_CALLBACK(caja_file_management_properties_dialog_update_media_sensitivity),
-                              builder);
 
 
     /* UI callbacks */

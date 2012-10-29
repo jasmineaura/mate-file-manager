@@ -4,7 +4,6 @@ SUBDIRS=file-manager
 
 bin_PROGRAMS = \
 	caja \
-	caja-file-management-properties \
 	caja-autorun-software \
 	caja-connect-server \
 	$(NULL)
@@ -165,12 +164,6 @@ caja-src-marshal.list: $(caja_SOURCES) Makefile.am
 
 %-marshal.h: %-marshal.list Makefile
 	$(AM_V_GEN)$(GLIB_GENMARSHAL) --header --prefix=$(subst -,_,$*)_marshal $< > $*-marshal.h
-
-caja_file_management_properties_SOURCES = \
-	caja-file-management-properties.c \
-	caja-file-management-properties.h \
-	caja-file-management-properties-main.c \
-	$(NULL)
 
 caja_autorun_software_SOURCES = \
 	caja-autorun-software.c \
