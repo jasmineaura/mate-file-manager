@@ -99,10 +99,6 @@ EelBackgroundImagePlacement eel_background_get_image_placement              (Eel
 gboolean                    eel_background_is_dark                          (EelBackground               *background);
 gboolean                    eel_background_is_set                           (EelBackground               *background);
 
-/* Helper function for widgets using EelBackground */
-void                        eel_background_expose                           (GtkWidget                   *widget,
-        GdkEventExpose              *event);
-
 /* Handles a dragged color being dropped on a widget to change the background color. */
 void                        eel_background_receive_dropped_color            (EelBackground               *background,
         GtkWidget                   *widget,

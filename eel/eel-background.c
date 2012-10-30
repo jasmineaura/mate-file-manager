@@ -470,55 +470,6 @@ eel_background_get_pixmap_and_color (EelBackground *background,
     return NULL;
 }
 
-void
-eel_background_expose (GtkWidget                   *widget,
-                       GdkEventExpose              *event)
-{
-    GdkColor color;
-    int window_width;
-    int window_height;
-    GdkPixmap *pixmap;
-    GdkWindow *widget_window;
-    cairo_t *cr;
-
-    EelBackground *background;
-
-    widget_window = gtk_widget_get_window (widget);
-    if (event->window != widget_window)
-    {
-        return;
-    }
-
-    background = eel_get_widget_background (widget);
-
-    drawable_get_adjusted_size (background, widget_window, &window_width, &window_height);
-
-    pixmap = eel_background_get_pixmap_and_color (background,
-             widget_window,
-             &color);
-    cr = gdk_cairo_create (widget_window);
-
-    if (pixmap) {
-        gdk_cairo_set_source_pixmap (cr, pixmap, 0, 0);
-        cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REPEAT);
-    } else {
-        gdk_cairo_set_source_color (cr, &color);
-    }
-
-    gdk_cairo_rectangle (cr, &event->area);
-    cairo_clip (cr);
-
-    cairo_rectangle (cr, 0, 0, window_width, window_height);
-    cairo_fill (cr);
-
-    cairo_destroy (cr);
-
-    if (pixmap)
-    {
-        g_object_unref (pixmap);
-    }
-}
-
 static void
 set_image_properties (EelBackground *background)
 {
