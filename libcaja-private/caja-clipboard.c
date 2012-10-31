@@ -432,7 +432,11 @@ owner_change_callback (GtkClipboard        *clipboard,
 }
 
 static void
+#if GTK_CHECK_VERSION (3, 0, 0)
+target_destroy_callback (GtkWidget *object,
+#else
 target_destroy_callback (GtkObject *object,
+#endif
                          gpointer callback_data)
 {
     TargetCallbackData *target_data;
@@ -440,7 +444,7 @@ target_destroy_callback (GtkObject *object,
     g_assert (callback_data != NULL);
     target_data = callback_data;
 
-    if (clipboard_items_are_merged_in (GTK_WIDGET(object)))
+    if (clipboard_items_are_merged_in (object))
     {
         merge_out_clipboard_menu_items (G_OBJECT (object), callback_data);
     }

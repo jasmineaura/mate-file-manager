@@ -274,7 +274,11 @@ dialog_response_cb (GtkDialog *dialog,
 }
 
 static void
+#if GTK_CHECK_VERSION(3, 0, 0)
+dialog_destroy_cb (GtkWidget *object,
+#else
 dialog_destroy_cb (GtkObject *object,
+#endif
                    CajaAutorunComboBoxData *data)
 {
     handle_dialog_closure (data);
