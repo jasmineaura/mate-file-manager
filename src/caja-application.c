@@ -430,8 +430,7 @@ check_required_directories (CajaApplication *application)
 
         dialog = eel_show_error_dialog (error_string, detail_string, NULL);
         /* We need the main event loop so the user has a chance to see the dialog. */
-        caja_main_event_loop_register (GTK_OBJECT (dialog));
-
+        caja_main_event_loop_register (GTK_WIDGET (dialog));
         g_string_free (directories_as_string, TRUE);
         g_free (error_string);
     }
@@ -1344,7 +1343,7 @@ caja_application_close_all_spatial_windows (void)
 }
 
 static void
-caja_application_destroyed_window (GtkObject *object, CajaApplication *application)
+caja_application_destroyed_window (GtkWidget *object, CajaApplication *application)
 {
     caja_application_window_list = g_list_remove (caja_application_window_list, object);
 }

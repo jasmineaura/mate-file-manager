@@ -659,7 +659,7 @@ fm_directory_view_confirm_multiple (GtkWindow *parent_window,
 	g_free (detail);
 
 	response = gtk_dialog_run (dialog);
-	gtk_object_destroy (GTK_OBJECT (dialog));
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	return response == GTK_RESPONSE_YES;
 }
@@ -2096,7 +2096,11 @@ real_unmerge_menus (FMDirectoryView *view)
 }
 
 static void
+#if GTK_CHECK_VERSION(3, 0, 0)
+fm_directory_view_destroy (GtkWidget *object)
+#else
 fm_directory_view_destroy (GtkObject *object)
+#endif
 {
 	FMDirectoryView *view;
 	GList *node, *next;
@@ -2157,7 +2161,11 @@ fm_directory_view_destroy (GtkObject *object)
 		view->details->directory_as_file = NULL;
 	}
 
-	EEL_CALL_PARENT (GTK_OBJECT_CLASS, destroy, (object));
+#if GTK_CHECK_VERSION(3, 0, 0)
+        EEL_CALL_PARENT (GTK_WIDGET_CLASS, destroy, (object));
+#else
+        EEL_CALL_PARENT (GTK_OBJECT_CLASS, destroy, (object));
+#endif
 }
 
 static void
@@ -2738,7 +2746,7 @@ copy_move_done_callback (GHashTable *debuting_files, gpointer data)
 			 * operate on. The ADD_FILE signal is registered as G_SIGNAL_RUN_LAST, so we
 			 * must use connect_after.
 			 */
-			g_signal_connect_data (GTK_OBJECT (directory_view),
+			g_signal_connect_data (directory_view,
 					       "add_file",
 					       G_CALLBACK (debuting_files_add_file_callback),
 					       debuting_files_data,
@@ -10797,8 +10805,11 @@ fm_directory_view_class_init (FMDirectoryViewClass *klass)
 	G_OBJECT_CLASS (klass)->finalize = fm_directory_view_finalize;
 	G_OBJECT_CLASS (klass)->set_property = fm_directory_view_set_property;
 
+#if GTK_CHECK_VERSION(3, 0, 0)
+	widget_class->destroy = fm_directory_view_destroy;
+#else
 	GTK_OBJECT_CLASS (klass)->destroy = fm_directory_view_destroy;
-
+#endif
 	widget_class->scroll_event = fm_directory_view_scroll_event;
 	widget_class->parent_set = fm_directory_view_parent_set;
 

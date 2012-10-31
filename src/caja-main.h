@@ -29,8 +29,8 @@
 
 #include <gtk/gtk.h>
 
-void     caja_main_event_loop_register    (GtkObject *object);
-gboolean caja_main_is_event_loop_mainstay (GtkObject *object);
+void     caja_main_event_loop_register    (GtkWidget *object);
+gboolean caja_main_is_event_loop_mainstay (GtkWidget *object);
 void     caja_main_event_loop_quit        (gboolean explicit);
 
 #endif /* CAJA_MAIN_H */
