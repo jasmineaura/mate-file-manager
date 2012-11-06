@@ -296,11 +296,12 @@ desktop_background_settings_notify_cb (GSettings *settings, gchar *key, gpointer
 }
 
 static void
-desktop_background_destroyed_callback (EelBackground *background, void *georgeWBush)
+desktop_background_weak_notify (gpointer data,
+                                GObject *object)
 {
     g_signal_handlers_disconnect_by_func(mate_background_preferences,
                                          G_CALLBACK (desktop_background_settings_notify_cb),
-                                         background);
+                                         object);
 }
 
 static void
@@ -311,8 +312,8 @@ caja_file_background_receive_settings_changes (EelBackground *background)
                       G_CALLBACK (desktop_background_settings_notify_cb),
                       background);
 
-    g_signal_connect (background, "destroy",
-                      G_CALLBACK (desktop_background_destroyed_callback), NULL);
+    g_object_weak_ref (G_OBJECT (background),
+                      desktop_background_weak_notify, NULL);
 }
 
 /* return true if the background is not in the default state */
